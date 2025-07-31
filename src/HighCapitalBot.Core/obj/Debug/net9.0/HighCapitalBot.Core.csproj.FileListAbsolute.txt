@@ -1,0 +1,6 @@
+C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.csproj.AssemblyReference.cache
+C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.AssemblyInfoInputs.cache
+C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.AssemblyInfo.cs
+C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.csproj.CoreCompileInputs.cache
+C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.sourcelink.json

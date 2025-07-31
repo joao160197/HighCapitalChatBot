@@ -1,11 +1,14 @@
+using HighCapitalBot.API.Filters;
 using HighCapitalBot.Core.DTOs;
 using HighCapitalBot.Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HighCapitalBot.API.Controllers;
 
 [ApiController]
 [Route("api/chat")]
+[JwtAuthorize]
 public class ChatController : ControllerBase
 {
     private readonly IChatService _chatService;

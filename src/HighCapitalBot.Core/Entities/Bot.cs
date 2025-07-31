@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HighCapitalBot.Core.Entities;
 
@@ -21,6 +22,10 @@ public class Bot
     
     public DateTime? UpdatedAt { get; set; }
     
-    // Navigation property
+    // Foreign key for User
+    public int UserId { get; set; }
+    
+    // Navigation properties
+    public User User { get; set; } = null!;
     public ICollection<ChatMessage> Messages { get; set; } = new List<ChatMessage>();
 }

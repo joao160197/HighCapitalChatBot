@@ -1,11 +1,14 @@
+using HighCapitalBot.API.Filters;
 using HighCapitalBot.Core.DTOs;
 using HighCapitalBot.Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HighCapitalBot.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[JwtAuthorize]
 public class BotsController : ControllerBase
 {
     private readonly IBotService _botService;

@@ -1,12 +1,15 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using AutoMapper;
 using HighCapitalBot.Core.Configuration;
 using HighCapitalBot.Core.Data;
 using HighCapitalBot.Core.DTOs;
+using HighCapitalBot.Core.DTOs.AI;
 using HighCapitalBot.Core.Entities;
 using HighCapitalBot.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace HighCapitalBot.Core.Services;
@@ -15,23 +18,20 @@ public class ChatService : IChatService
 {
     private readonly IRepository<ChatMessage> _chatMessageRepository;
     private readonly IRepository<Bot> _botRepository;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly OpenAISettings _openAISettings;
+    private readonly IAiService _aiService;
     private readonly ILogger<ChatService> _logger;
     private readonly IMapper _mapper;
 
     public ChatService(
         IRepository<ChatMessage> chatMessageRepository,
         IRepository<Bot> botRepository,
-        IHttpClientFactory httpClientFactory,
-        IOptions<OpenAISettings> openAISettings,
+        IAiService aiService,
         ILogger<ChatService> logger,
         IMapper mapper)
     {
         _chatMessageRepository = chatMessageRepository ?? throw new ArgumentNullException(nameof(chatMessageRepository));
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
-        _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-        _openAISettings = openAISettings?.Value ?? throw new ArgumentNullException(nameof(openAISettings));
+        _aiService = aiService ?? throw new ArgumentNullException(nameof(aiService));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
@@ -61,8 +61,27 @@ public class ChatService : IChatService
             // Get chat history for context
             var chatHistory = await GetChatHistoryForContext(botId);
             
-            // Call OpenAI API
-            var botResponseContent = await CallOpenAIChatAPIAsync(bot, chatHistory, message);
+            // Prepare chat history for AI
+            var messages = new List<OpenAiMessage>
+            {
+                new() { Role = "system", Content = bot.InitialContext }
+            };
+
+            // Add chat history
+            foreach (var chatMessage in chatHistory)
+            {
+                messages.Add(new OpenAiMessage
+                {
+                    Role = chatMessage.IsFromUser ? "user" : "assistant",
+                    Content = chatMessage.Content
+                });
+            }
+
+            // Add the new message
+            messages.Add(new OpenAiMessage { Role = "user", Content = message });
+
+            // Call AI service with history
+            var botResponseContent = await _aiService.GetResponseWithHistoryAsync(messages);
 
             // Save bot response
             var botMessage = new ChatMessage
@@ -85,7 +104,7 @@ public class ChatService : IChatService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error sending message to bot {BotId}", botId);
+            _logger.LogError(ex, $"Error sending message to bot {botId}", botId);
             throw;
         }
     }
@@ -99,7 +118,7 @@ public class ChatService : IChatService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error getting chat history for bot {BotId}", botId);
+            _logger.LogError(ex, $"Error getting chat history for bot {botId}", botId);
             throw;
         }
     }
@@ -114,7 +133,7 @@ public class ChatService : IChatService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error clearing chat history for bot {BotId}", botId);
+            _logger.LogError(ex, $"Error clearing chat history for bot {botId}", botId);
             throw;
         }
     }
@@ -129,56 +148,5 @@ public class ChatService : IChatService
                 .OrderBy(m => m.Timestamp));
     }
 
-    private async Task<string> CallOpenAIChatAPIAsync(Bot bot, IEnumerable<ChatMessage> chatHistory, string newMessage)
-    {
-        var httpClient = _httpClientFactory.CreateClient();
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _openAISettings.ApiKey);
-
-        // Prepare messages with bot context and chat history
-        var messages = new List<object>
-        {
-            new { role = "system", content = bot.InitialContext }
-        };
-
-        // Add chat history
-        foreach (var message in chatHistory)
-        {
-            messages.Add(new
-            {
-                role = message.IsFromUser ? "user" : "assistant",
-                content = message.Content
-            });
-        }
-
-        // Add the new message
-        messages.Add(new { role = "user", content = newMessage });
-
-        // Prepare request body
-        var requestBody = new
-        {
-            model = _openAISettings.ModelName,
-            messages = messages,
-            max_tokens = _openAISettings.MaxTokens,
-            temperature = _openAISettings.Temperature
-        };
-
-        var content = new StringContent(
-            JsonSerializer.Serialize(requestBody),
-            Encoding.UTF8,
-            "application/json");
-
-        // Send request to OpenAI API
-        var response = await httpClient.PostAsync("https://api.openai.com/v1/chat/completions", content);
-        response.EnsureSuccessStatusCode();
-
-        // Parse response
-        var responseContent = await response.Content.ReadAsStringAsync();
-        var responseObject = JsonSerializer.Deserialize<JsonElement>(responseContent);
-        
-        return responseObject
-            .GetProperty("choices")[0]
-            .GetProperty("message")
-            .GetProperty("content")
-            .GetString() ?? string.Empty;
-    }
+    // Método removido pois a lógica foi movida para o OpenAiService
 }

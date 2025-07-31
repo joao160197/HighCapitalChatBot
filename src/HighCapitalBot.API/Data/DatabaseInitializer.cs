@@ -1,5 +1,9 @@
+using System.Text;
 using HighCapitalBot.Core.Data;
+using HighCapitalBot.Core.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace HighCapitalBot.API.Data;
 
@@ -13,12 +17,16 @@ public static class DatabaseInitializer
         try
         {
             var context = services.GetRequiredService<AppDbContext>();
+            var userManager = services.GetRequiredService<UserManager<User>>();
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
+            var configuration = services.GetRequiredService<IConfiguration>();
             
             // Aplica as migrações pendentes
             await context.Database.MigrateAsync();
             
-            // Aqui você pode adicionar dados iniciais se necessário
-            // await SeedDataAsync(context);
+            // Inicializa os dados iniciais
+            await SeedRolesAsync(roleManager);
+            await SeedAdminUserAsync(userManager, configuration);
         }
         catch (Exception ex)
         {
@@ -28,23 +36,38 @@ public static class DatabaseInitializer
         }
     }
     
-    // Método opcional para popular dados iniciais
-    // private static async Task SeedDataAsync(AppDbContext context)
-    // {
-    //     // Adicione aqui a lógica para popular dados iniciais
-    //     if (!await context.Bots.AnyAsync())
-    //     {
-    //         // Exemplo de bot inicial
-    //         var defaultBot = new Bot
-    //         {
-    //             Name = "Assistente Padrão",
-    //             Description = "Um assistente útil para responder suas perguntas",
-    //             InitialContext = "Você é um assistente prestativo que responde de forma clara e concisa.",
-    //             CreatedAt = DateTime.UtcNow
-    //         };
-    //         
-    //         await context.Bots.AddAsync(defaultBot);
-    //         await context.SaveChangesAsync();
-    //     }
-    // }
+    private static async Task SeedRolesAsync(RoleManager<IdentityRole<int>> roleManager)
+    {
+        string[] roles = { "Admin", "User" };
+        
+        foreach (var role in roles)
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole<int>(role));
+        }
+    }
+    
+    private static async Task SeedAdminUserAsync(UserManager<User> userManager, IConfiguration configuration)
+    {
+        var adminEmail = configuration["AdminUser:Email"] ?? "admin@highcapitalbot.com";
+        var adminPassword = configuration["AdminUser:Password"] ?? "Admin@123";
+        
+        if (await userManager.FindByEmailAsync(adminEmail) == null)
+        {
+            var adminUser = new User
+            {
+                UserName = "admin",
+                Email = adminEmail,
+                EmailConfirmed = true
+            };
+            
+            var result = await userManager.CreateAsync(adminUser, adminPassword);
+            
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+            }
+        }
+    }
+}
 }
