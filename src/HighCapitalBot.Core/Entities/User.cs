@@ -12,9 +12,8 @@ public class User : IdentityUser<int>
     // - PasswordHash
     // - etc.
     
-    [Required]
-    [MaxLength(100)]
-    public string Email { get; set; } = string.Empty;
+    public override string? Email { get; set; }
+    public override string? UserName { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? LastLoginAt { get; set; }

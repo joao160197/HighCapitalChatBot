@@ -41,7 +41,7 @@ public class AuthService : IAuthService
 
         var user = new User
         {
-            Username = request.Username,
+            UserName = request.Username, // Corrigido de Username para UserName
             Email = request.Email,
             CreatedAt = DateTime.UtcNow
         };
@@ -57,8 +57,8 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request)
     {
-        var user = await _userRepository.GetAll()
-            .FirstOrDefaultAsync(u => u.Email == request.Email);
+        // Corrigido para usar FindAsync, que existe no repositório
+        var user = (await _userRepository.FindAsync(u => u.Email == request.Email)).FirstOrDefault();
 
         if (user == null || !VerifyPassword(user, request.Password))
         {
@@ -66,7 +66,7 @@ public class AuthService : IAuthService
         }
 
         user.LastLoginAt = DateTime.UtcNow;
-        await _userRepository.UpdateAsync(user);
+        _userRepository.Update(user); // Corrigido de UpdateAsync para Update
         await _userRepository.SaveChangesAsync();
 
         return GenerateJwtToken(user);
@@ -74,8 +74,9 @@ public class AuthService : IAuthService
 
     public async Task<bool> UserExistsAsync(string email)
     {
-        return await _userRepository.GetAll()
-            .AnyAsync(u => u.Email == email);
+        // Corrigido para usar FindAsync, que existe no repositório
+        var users = await _userRepository.FindAsync(u => u.Email == email);
+        return users.Any();
     }
 
     private string HashPassword(User user, string password)
@@ -85,6 +86,9 @@ public class AuthService : IAuthService
 
     private bool VerifyPassword(User user, string password)
     {
+        if (string.IsNullOrEmpty(user.PasswordHash))
+            return false;
+
         var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
         return result == PasswordVerificationResult.Success || 
                result == PasswordVerificationResult.SuccessRehashNeeded;
@@ -100,8 +104,8 @@ public class AuthService : IAuthService
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.Username)
+                new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
+                new Claim(ClaimTypes.Name, user.UserName ?? string.Empty)
             }),
             Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationInMinutes),
             Issuer = _jwtSettings.Issuer,
@@ -118,8 +122,8 @@ public class AuthService : IAuthService
         {
             Token = tokenString,
             ExpiresAt = token.ValidTo,
-            Email = user.Email,
-            Username = user.Username
+            Email = user.Email ?? string.Empty,
+            Username = user.UserName ?? string.Empty
         };
     }
 }

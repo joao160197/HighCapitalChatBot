@@ -9,6 +9,8 @@ using HighCapitalBot.Core.Entities;
 using HighCapitalBot.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace HighCapitalBot.Core.Services;
 
@@ -17,19 +19,29 @@ public class BotService : IBotService
     private readonly IRepository<Bot> _botRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<BotService> _logger;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public BotService(IRepository<Bot> botRepository, IMapper mapper, ILogger<BotService> logger)
+    public BotService(IRepository<Bot> botRepository, IMapper mapper, ILogger<BotService> logger, IHttpContextAccessor httpContextAccessor)
     {
         _botRepository = botRepository ?? throw new ArgumentNullException(nameof(botRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
     }
 
     public async Task<BotDto> CreateBotAsync(CreateBotDto createBotDto)
     {
         try
         {
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogError("User ID not found in token.");
+                throw new UnauthorizedAccessException("User ID not found in token.");
+            }
+
             var bot = _mapper.Map<Bot>(createBotDto);
+            bot.AppUserId = userId;
             await _botRepository.AddAsync(bot);
             await _botRepository.SaveChangesAsync();
             
@@ -51,7 +63,8 @@ public class BotService : IBotService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error getting bot with id {BotId}", id);
+            // Corrigido para usar o log estruturado corretamente
+            _logger.LogError(ex, "Error getting bot with id {id}", id);
             throw;
         }
     }
@@ -93,7 +106,8 @@ public class BotService : IBotService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error updating bot with id {BotId}", id);
+            // Corrigido para usar o log estruturado corretamente
+            _logger.LogError(ex, "Error updating bot with id {id}", id);
             throw;
         }
     }
@@ -110,7 +124,8 @@ public class BotService : IBotService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error deleting bot with id {id}");
+            // Corrigido para usar o log estruturado corretamente
+            _logger.LogError(ex, "Error deleting bot with id {id}", id);
             throw;
         }
     }

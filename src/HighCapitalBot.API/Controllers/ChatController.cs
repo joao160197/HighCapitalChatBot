@@ -39,7 +39,7 @@ public class ChatController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error sending message to bot {BotId}", botId);
+            _logger.LogError(ex, "Error sending message to bot {botId}", botId);
             return StatusCode(500, "Internal server error while processing the message");
         }
     }
@@ -54,7 +54,7 @@ public class ChatController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error getting chat history for bot {BotId}", botId);
+            _logger.LogError(ex, "Error getting chat history for bot {botId}", botId);
             return StatusCode(500, "Internal server error while retrieving chat history");
         }
     }
@@ -69,7 +69,7 @@ public class ChatController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error clearing chat history for bot {BotId}", botId);
+            _logger.LogError(ex, "Error clearing chat history for bot {botId}", botId);
             return StatusCode(500, "Internal server error while clearing chat history");
         }
     }

@@ -7,6 +7,8 @@ using HighCapitalBot.Core.Entities;
 using HighCapitalBot.Core.Interfaces;
 using HighCapitalBot.Core.Mappings;
 using HighCapitalBot.Core.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +23,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 // Configure DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlite(connectionString));
 
 // Register repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -41,6 +43,11 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 
 // Configure JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+
+if (jwtSettings == null)
+{
+    throw new InvalidOperationException("JWT settings not found in configuration.");
+}
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
 builder.Services.AddAuthentication(options =>
@@ -64,6 +71,7 @@ builder.Services.AddAuthentication(options =>
     });
 
 // Register services
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IBotService, BotService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
