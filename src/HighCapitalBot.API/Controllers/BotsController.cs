@@ -49,7 +49,7 @@ public class BotsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error getting bot with id {BotId}", id);
+            _logger.LogError(ex, "Error getting bot with id {id}", id);
             return StatusCode(500, "Internal server error while retrieving the bot");
         }
     }
@@ -94,7 +94,7 @@ public class BotsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error updating bot with id {BotId}", id);
+            _logger.LogError(ex, "Error updating bot with id {id}", id);
             return StatusCode(500, "Internal server error while updating the bot");
         }
     }
@@ -114,7 +114,7 @@ public class BotsController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error deleting bot with id {BotId}", id);
+            _logger.LogError(ex, "Error deleting bot with id {id}", id);
             return StatusCode(500, "Internal server error while deleting the bot");
         }
     }
