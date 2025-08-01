@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace HighCapitalBot.Core.Data;
 
-public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
+public class AppDbContext : IdentityDbContext<AppUser>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -27,18 +27,12 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
             .OnDelete(DeleteBehavior.Cascade);
             
         // Configuração do relacionamento entre User e Bot
-        modelBuilder.Entity<User>()
+        modelBuilder.Entity<AppUser>()
             .HasMany(u => u.Bots)
-            .WithOne(b => b.User)
-            .HasForeignKey(b => b.UserId)
+            .WithOne(b => b.AppUser)
+            .HasForeignKey(b => b.AppUserId)
             .OnDelete(DeleteBehavior.Cascade);
             
-        // Configurações adicionais para o Identity
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.Property(u => u.Email).IsRequired().HasMaxLength(100);
-            entity.Property(u => u.UserName).IsRequired().HasMaxLength(100);
-            entity.Property(u => u.PasswordHash).IsRequired();
-        });
+        
     }
 }

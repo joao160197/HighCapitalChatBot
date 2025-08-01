@@ -1,16 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
-using HighCapitalBot.Core.Data;
 using HighCapitalBot.Core.DTOs;
 using HighCapitalBot.Core.Entities;
 using HighCapitalBot.Core.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 
 namespace HighCapitalBot.Core.Services;
 

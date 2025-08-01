@@ -1,4 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using HighCapitalBot.API.Data;
 using HighCapitalBot.API.Filters;
 using HighCapitalBot.Core.Configuration;
@@ -6,15 +11,15 @@ using HighCapitalBot.Core.Data;
 using HighCapitalBot.Core.Entities;
 using HighCapitalBot.Core.Interfaces;
 using HighCapitalBot.Core.Mappings;
+using HighCapitalBot.Core.Models.Settings; 
 using HighCapitalBot.Core.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+using HighCapitalBot.Core.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text.Json.Serialization;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +34,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 // Configure Identity
-builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
+builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     {
         options.Password.RequireDigit = true;
         options.Password.RequireLowercase = true;
@@ -75,16 +80,31 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IBotService, BotService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAiService, OpenAiService>();
+// Configuração do AutoMapper
+builder.Services.AddAutoMapper(typeof(HighCapitalBot.Core.Configuration.MappingProfile));
 
-// Configure AutoMapper
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+/*
+// Injeção de dependência para o HuggingFaceService
+builder.Services.AddHttpClient<IAiService, HuggingFaceService>(client =>
+{
+    var settings = builder.Configuration.GetSection("HuggingFaceSettings").Get<HuggingFaceSettings>();
+    if (string.IsNullOrEmpty(settings?.ApiKey))
+    {
+        throw new InvalidOperationException("A chave da API do Hugging Face não foi configurada.");
+    }
+    client.BaseAddress = new Uri("https://api-inference.huggingface.co/models/");
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", settings.ApiKey);
+});
+*/
 
-// Configure HTTP client for OpenAI
-builder.Services.AddHttpClient();
+// Configuração do OpenAIService com HttpClient
+builder.Services.AddHttpClient<IAiService, OpenAiService>();
 
-// Configure OpenAI settings
-builder.Services.Configure<OpenAISettings>(builder.Configuration.GetSection(OpenAISettings.SectionName));
+// Configure OpenAISettings
+builder.Services.Configure<OpenAiSettings>(builder.Configuration.GetSection("OpenAISettings"));
+
+// Configure HuggingFace settings
+builder.Services.Configure<HuggingFaceSettings>(builder.Configuration.GetSection("HuggingFaceSettings"));
 
 // Configure CORS
 builder.Services.AddCors(options =>

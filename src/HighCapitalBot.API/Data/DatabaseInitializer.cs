@@ -1,4 +1,5 @@
-using System.Text;
+using System;
+using System.Threading.Tasks;
 using HighCapitalBot.Core.Data;
 using HighCapitalBot.Core.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -17,8 +18,8 @@ public static class DatabaseInitializer
         try
         {
             var context = services.GetRequiredService<AppDbContext>();
-            var userManager = services.GetRequiredService<UserManager<User>>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
+            var userManager = services.GetRequiredService<UserManager<AppUser>>();
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             var configuration = services.GetRequiredService<IConfiguration>();
             
             // Aplica as migrações pendentes
@@ -36,25 +37,25 @@ public static class DatabaseInitializer
         }
     }
     
-    private static async Task SeedRolesAsync(RoleManager<IdentityRole<int>> roleManager)
+    private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
     {
         string[] roles = { "Admin", "User" };
         
         foreach (var role in roles)
         {
             if (!await roleManager.RoleExistsAsync(role))
-            await roleManager.CreateAsync(new IdentityRole<int>(role));
+            await roleManager.CreateAsync(new IdentityRole(role));
         }
     }
     
-    private static async Task SeedAdminUserAsync(UserManager<User> userManager, IConfiguration configuration)
+    private static async Task SeedAdminUserAsync(UserManager<AppUser> userManager, IConfiguration configuration)
     {
         var adminEmail = configuration["AdminUser:Email"] ?? "admin@highcapitalbot.com";
         var adminPassword = configuration["AdminUser:Password"] ?? "Admin@123";
         
         if (await userManager.FindByEmailAsync(adminEmail) == null)
         {
-            var adminUser = new User
+            var adminUser = new AppUser
             {
                 UserName = "admin",
                 Email = adminEmail,

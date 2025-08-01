@@ -9,16 +9,15 @@ namespace HighCapitalBot.Core.Data
     {
         public AppDbContext CreateDbContext(string[] args)
         {
-            string basePath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "HighCapitalBot.API"));
-
+            // Build configuration
             IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(basePath)
+                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "../HighCapitalBot.API"))
                 .AddJsonFile("appsettings.json")
                 .Build();
 
+            // Get connection string
             var builder = new DbContextOptionsBuilder<AppDbContext>();
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-
             builder.UseSqlite(connectionString);
 
             return new AppDbContext(builder.Options);

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\João\\Desktop\\HighCapitalBot\\src\\HighCapitalBot.API\\HighCapitalBot.API.csproj": {}
+    "C:\\Users\\João\\Desktop\\HighCapitalBot\\src\\HighCapitalBot.Api\\HighCapitalBot.API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\João\\Desktop\\HighCapitalBot\\src\\HighCapitalBot.API\\HighCapitalBot.API.csproj": {
+    "C:\\Users\\João\\Desktop\\HighCapitalBot\\src\\HighCapitalBot.Api\\HighCapitalBot.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\João\\Desktop\\HighCapitalBot\\src\\HighCapitalBot.API\\HighCapitalBot.API.csproj",
+        "projectUniqueName": "C:\\Users\\João\\Desktop\\HighCapitalBot\\src\\HighCapitalBot.Api\\HighCapitalBot.API.csproj",
         "projectName": "HighCapitalBot.API",
-        "projectPath": "C:\\Users\\João\\Desktop\\HighCapitalBot\\src\\HighCapitalBot.API\\HighCapitalBot.API.csproj",
+        "projectPath": "C:\\Users\\João\\Desktop\\HighCapitalBot\\src\\HighCapitalBot.Api\\HighCapitalBot.API.csproj",
         "packagesPath": "C:\\Users\\João\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\João\\Desktop\\HighCapitalBot\\src\\HighCapitalBot.API\\obj\\",
+        "outputPath": "C:\\Users\\João\\Desktop\\HighCapitalBot\\src\\HighCapitalBot.Api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\João\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -168,6 +168,10 @@
               "target": "Package",
               "version": "[7.6.0, )"
             },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
               "version": "[7.6.0, )"
@@ -185,6 +189,9 @@
           "assetTargetFallback": true,
           "warn": true,
           "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }

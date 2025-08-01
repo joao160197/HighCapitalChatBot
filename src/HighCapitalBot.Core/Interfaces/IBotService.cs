@@ -1,4 +1,5 @@
 using HighCapitalBot.Core.DTOs;
+using HighCapitalBot.Core.Entities;
 
 namespace HighCapitalBot.Core.Interfaces;
 
