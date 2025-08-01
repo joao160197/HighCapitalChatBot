@@ -1,13 +1,13 @@
+C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\bin\Debug\net9.0\HighCapitalBot.Core.deps.json
+C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\bin\Debug\net9.0\HighCapitalBot.Core.runtimeconfig.json
+C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\bin\Debug\net9.0\HighCapitalBot.Core.dll
+C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\bin\Debug\net9.0\HighCapitalBot.Core.pdb
 C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.csproj.AssemblyReference.cache
 C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.AssemblyInfoInputs.cache
 C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.AssemblyInfo.cs
 C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.csproj.CoreCompileInputs.cache
 C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.sourcelink.json
-C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\bin\Debug\net9.0\HighCapitalBot.Core.deps.json
-C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\bin\Debug\net9.0\HighCapitalBot.Core.runtimeconfig.json
-C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\bin\Debug\net9.0\HighCapitalBot.Core.dll
-C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\bin\Debug\net9.0\HighCapitalBot.Core.pdb
 C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.dll
 C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\refint\HighCapitalBot.Core.dll
 C:\Users\João\Desktop\HighCapitalBot\src\HighCapitalBot.Core\obj\Debug\net9.0\HighCapitalBot.Core.pdb

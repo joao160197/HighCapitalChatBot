@@ -1,8 +1,10 @@
 using HighCapitalBot.API.Filters;
 using HighCapitalBot.Core.DTOs;
+using HighCapitalBot.Core.DTOs.Message;
 using HighCapitalBot.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HighCapitalBot.API.Controllers;
 
@@ -21,16 +23,22 @@ public class ChatController : ControllerBase
     }
 
     [HttpPost("{botId}/message")]
-    public async Task<ActionResult<ChatResponseDto>> SendMessage(int botId, [FromBody] ChatRequestDto request)
+    public async Task<IActionResult> SendMessage(int botId, [FromBody] SendMessageRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
-            if (!ModelState.IsValid)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
             {
-                return BadRequest(ModelState);
+                return Unauthorized("User ID not found in token.");
             }
 
-            var response = await _chatService.SendMessageAsync(botId, request.Message);
+            var response = await _chatService.SendMessageAsync(botId, request.Content, userId);
             return Ok(response);
         }
         catch (ArgumentException ex)

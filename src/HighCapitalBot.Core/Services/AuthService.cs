@@ -18,14 +18,14 @@ namespace HighCapitalBot.Core.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IRepository<User> _userRepository;
+    private readonly IRepository<AppUser> _userRepository;
     private readonly JwtSettings _jwtSettings;
-    private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly IPasswordHasher<AppUser> _passwordHasher;
 
     public AuthService(
-        IRepository<User> userRepository,
+        IRepository<AppUser> userRepository,
         IOptions<JwtSettings> jwtSettings,
-        IPasswordHasher<User> passwordHasher)
+        IPasswordHasher<AppUser> passwordHasher)
     {
         _userRepository = userRepository;
         _jwtSettings = jwtSettings.Value;
@@ -39,7 +39,7 @@ public class AuthService : IAuthService
             throw new InvalidOperationException("Email already registered");
         }
 
-        var user = new User
+        var user = new AppUser
         {
             UserName = request.Username, // Corrigido de Username para UserName
             Email = request.Email,
@@ -79,12 +79,12 @@ public class AuthService : IAuthService
         return users.Any();
     }
 
-    private string HashPassword(User user, string password)
+    private string HashPassword(AppUser user, string password)
     {
         return _passwordHasher.HashPassword(user, password);
     }
 
-    private bool VerifyPassword(User user, string password)
+    private bool VerifyPassword(AppUser user, string password)
     {
         if (string.IsNullOrEmpty(user.PasswordHash))
             return false;
@@ -94,7 +94,7 @@ public class AuthService : IAuthService
                result == PasswordVerificationResult.SuccessRehashNeeded;
     }
 
-    private AuthResponse GenerateJwtToken(User user)
+    private AuthResponse GenerateJwtToken(AppUser user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);

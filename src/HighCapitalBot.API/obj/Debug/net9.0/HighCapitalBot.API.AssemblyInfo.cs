@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HighCapitalBot.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+13786126a0e66ba0f3825b7b53f5ef57013689f7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a227f7432b4a1059bd0782c7e42202634cdd486d")]
 [assembly: System.Reflection.AssemblyProductAttribute("HighCapitalBot.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HighCapitalBot.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

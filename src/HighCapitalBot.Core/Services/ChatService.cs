@@ -36,71 +36,85 @@ public class ChatService : IChatService
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<ChatResponseDto> SendMessageAsync(int botId, string message)
+    public async Task<ChatResponseDto> SendMessageAsync(int botId, string message, string userId)
     {
         try
         {
-            // Get the bot with its context
-            var bot = await _botRepository.GetByIdAsync(botId);
-            if (bot == null)
+            try
             {
-                throw new ArgumentException($"Bot with id {botId} not found.", nameof(botId));
-            }
-
-            // Save user message
-            var userMessage = new ChatMessage
-            {
-                Content = message,
-                IsFromUser = true,
-                Timestamp = DateTime.UtcNow,
-                BotId = botId
-            };
-
-            await _chatMessageRepository.AddAsync(userMessage);
-
-            // Get chat history for context
-            var chatHistory = await GetChatHistoryForContext(botId);
-            
-            // Prepare chat history for AI
-            var messages = new List<OpenAiMessage>
-            {
-                new() { Role = "system", Content = bot.InitialContext }
-            };
-
-            // Add chat history
-            foreach (var chatMessage in chatHistory)
-            {
-                messages.Add(new OpenAiMessage
+                // Get the bot with its context
+                var bot = await _botRepository.GetByIdAsync(botId);
+                if (bot == null)
                 {
-                    Role = chatMessage.IsFromUser ? "user" : "assistant",
-                    Content = chatMessage.Content
-                });
+                    throw new ArgumentException($"Bot with id {botId} not found.", nameof(botId));
+                }
+
+                // Save user message
+                var userMessage = new ChatMessage
+                {
+                    Content = message,
+                    IsFromUser = true,
+                    Timestamp = DateTime.UtcNow,
+                    BotId = botId
+                };
+
+                await _chatMessageRepository.AddAsync(userMessage);
+                await _chatMessageRepository.SaveChangesAsync(); // Salva a mensagem do usuário ANTES de buscar o histórico
+
+                // Get chat history for context
+                var chatHistory = await GetChatHistoryForContext(botId);
+                
+                // Prepare chat history for AI
+                var messages = new List<OpenAiMessage>();
+
+                if (!string.IsNullOrEmpty(bot.InitialContext))
+                {
+                    messages.Add(new() { Role = "system", Content = bot.InitialContext });
+                }
+
+                // Add chat history
+                foreach (var chatMessage in chatHistory)
+                {
+                    messages.Add(new OpenAiMessage
+                    {
+                        Role = chatMessage.IsFromUser ? "user" : "assistant",
+                        Content = chatMessage.Content
+                    });
+                }
+
+                // Call AI service with history
+                var botResponseContent = await _aiService.GetResponseWithHistoryAsync(messages);
+
+                // Save bot response
+                var botMessage = new ChatMessage
+                {
+                    Content = botResponseContent,
+                    IsFromUser = false,
+                    Timestamp = DateTime.UtcNow,
+                    BotId = botId
+                };
+
+                await _chatMessageRepository.AddAsync(botMessage);
+                await _chatMessageRepository.SaveChangesAsync();
+
+                // Return both messages
+                return new ChatResponseDto
+                {
+                    UserMessage = _mapper.Map<ChatMessageDto>(userMessage),
+                    BotResponse = _mapper.Map<ChatMessageDto>(botMessage)
+                };
             }
-
-            // Add the new message
-            messages.Add(new OpenAiMessage { Role = "user", Content = message });
-
-            // Call AI service with history
-            var botResponseContent = await _aiService.GetResponseWithHistoryAsync(messages);
-
-            // Save bot response
-            var botMessage = new ChatMessage
+            catch (Exception ex)
             {
-                Content = botResponseContent,
-                IsFromUser = false,
-                Timestamp = DateTime.UtcNow,
-                BotId = botId
-            };
-
-            await _chatMessageRepository.AddAsync(botMessage);
-            await _chatMessageRepository.SaveChangesAsync();
-
-            // Return both messages
-            return new ChatResponseDto
-            {
-                UserMessage = _mapper.Map<ChatMessageDto>(userMessage),
-                BotResponse = _mapper.Map<ChatMessageDto>(botMessage)
-            };
+                Console.WriteLine($"[ChatService ERROR] Exception caught in SendMessageAsync: {ex.Message}");
+                Console.WriteLine($"[ChatService ERROR] Stack Trace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"[ChatService ERROR] Inner Exception: {ex.InnerException.Message}");
+                    Console.WriteLine($"[ChatService ERROR] Inner Stack Trace: {ex.InnerException.StackTrace}");
+                }
+                throw; // Re-lança a exceção para que o controller retorne o 500, mas agora teremos o log.
+            }
         }
         catch (Exception ex)
         {

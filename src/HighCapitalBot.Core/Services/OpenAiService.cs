@@ -87,8 +87,8 @@ public class OpenAiService : IAiService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro ao obter resposta da OpenAI com histórico");
-            return "Desculpe, ocorreu um erro ao processar sua mensagem. Por favor, tente novamente mais tarde.";
+            _logger.LogError(ex, "Erro ao obter resposta da OpenAI com histórico. A exceção será relançada.");
+            return "Ocorreu um erro ao conectar com a inteligência artificial. Por favor, tente novamente mais tarde.";
         }
     }
 
