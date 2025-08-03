@@ -18,4 +18,10 @@ appsettings.Development.json
 
 # Arquivo do banco de dados local
 *.db
+
+# Dependências de frontend
+node_modules/
+build/
+.env.local
+.env
 *.db-journal
