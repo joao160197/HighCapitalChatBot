@@ -24,4 +24,4 @@ node_modules/
 build/
 .env.local
 .env
-*.db-journal
+*.db-journalbin/
