@@ -7,6 +7,13 @@
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" />
 </div>
 
+## ℹ️ Nota Importante
+
+Este repositório contém apenas o backend da aplicação. O frontend está disponível em um repositório separado:
+[HighCapitalChatBot-Frontend](https://github.com/joao160197/HighCapitalChatBot-Frontend)
+
+Para executar o projeto completo, você precisará clonar ambos os repositórios. Veja as instruções de instalação abaixo.
+
 ## 🚀 Visão Geral do Projeto
 
 O **HighCapitalChatBot** é uma aplicação web completa que permite a criação e interação com chatbots personalizados, potencializados por Inteligência Artificial. Desenvolvido como parte de um desafio técnico, o projeto demonstra uma arquitetura robusta com backend em C# .NET e frontend em ReactJS, seguindo as melhores práticas de desenvolvimento de software.
@@ -86,7 +93,21 @@ O **HighCapitalChatBot** é uma aplicação web completa que permite a criação
    npm start
    ```
 
-4. **Acessar a Aplicação**
+4. **Configurar o Repositório do Frontend**
+   ```bash
+   # Remova a pasta frontend vazia (se existir)
+   rmdir /s /q frontend
+   
+   # Clone o repositório do frontend
+   git clone https://github.com/joao160197/HighCapitalChatBot-Frontend.git frontend
+   
+   # Instale as dependências
+   cd frontend
+   npm install
+   npm start
+   ```
+
+5. **Acessar a Aplicação**
    - Frontend: http://localhost:3000
    - Backend: http://localhost:5044
    - Swagger UI: http://localhost:5044/swagger
@@ -161,4 +182,5 @@ npm test
 ```
 
 
+# HighCapitalChatBot
 # HighCapitalChatBot
