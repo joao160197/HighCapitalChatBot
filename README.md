@@ -57,7 +57,7 @@ A plataforma permite que usuários criem múltiplos bots, cada um com seu própr
 │   ├── HighCapitalBot.Core/        # Lógica de negócio, Entidades, DTOs, Services, Interfaces
 │   ├── HighCapitalBot.Data/        # Contexto do EF Core, Repositórios, Migrações
 │   └── HighCapitalBot.sln          # Solução do Visual Studio
-├── highcapitalbot-frontend/        # Projeto do Frontend (React)
+├── frontend/                       # Projeto do Frontend (React)
 │   ├── public/
 │   └── src/
 └── README.md
@@ -84,8 +84,8 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
 
 2.  **Configure a API da OpenAI:**
     -   Navegue até o projeto da API: `cd src/HighCapitalBot.Api`
-    -   Renomeie o arquivo `appsettings.example.json` para `appsettings.Development.json`.
-    -   Abra `appsettings.Development.json` e insira sua chave da API da OpenAI no campo `ApiKey`:
+    -   Abra o arquivo `src/HighCapitalBot.API/appsettings.Development.json` (crie-o se não existir, copiando de `appsettings.json`).
+    -   Insira sua chave da API da OpenAI no campo `ApiKey` dentro de `OpenAiSettings`:
         ```json
         "OpenAiSettings": {
           "ApiKey": "SUA_CHAVE_API_AQUI",
@@ -106,7 +106,7 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
 1.  **Navegue até a pasta do frontend:**
     ```bash
     # A partir da raiz do projeto
-    cd ../highcapitalbot-frontend 
+    cd ../frontend 
     ```
 
 2.  **Instale as dependências:**
@@ -118,6 +118,6 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
     ```bash
     npm start
     ```
-    -   A aplicação React estará disponível em `http://localhost:3003`.
+    -   A aplicação React estará disponível em `http://localhost:3000`.
 
 Agora você pode se registrar, criar seu primeiro bot e começar a conversar!

@@ -18,80 +18,70 @@ namespace HighCapitalBot.Core.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IRepository<AppUser> _userRepository;
+    private readonly UserManager<AppUser> _userManager;
+    private readonly SignInManager<AppUser> _signInManager;
     private readonly JwtSettings _jwtSettings;
-    private readonly IPasswordHasher<AppUser> _passwordHasher;
 
     public AuthService(
-        IRepository<AppUser> userRepository,
-        IOptions<JwtSettings> jwtSettings,
-        IPasswordHasher<AppUser> passwordHasher)
+        UserManager<AppUser> userManager,
+        SignInManager<AppUser> signInManager,
+        IOptions<JwtSettings> jwtSettings)
     {
-        _userRepository = userRepository;
+        _userManager = userManager;
+        _signInManager = signInManager;
         _jwtSettings = jwtSettings.Value;
-        _passwordHasher = passwordHasher;
     }
 
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
     {
-        if (await UserExistsAsync(request.Email))
+        var existingUser = await _userManager.FindByEmailAsync(request.Email);
+        if (existingUser != null)
         {
             throw new InvalidOperationException("Email already registered");
         }
 
         var user = new AppUser
         {
-            UserName = request.Username, // Corrigido de Username para UserName
+            UserName = request.Username,
             Email = request.Email,
             CreatedAt = DateTime.UtcNow
         };
 
-        // Hash da senha
-        user.PasswordHash = HashPassword(user, request.Password);
+        var result = await _userManager.CreateAsync(user, request.Password);
 
-        await _userRepository.AddAsync(user);
-        await _userRepository.SaveChangesAsync();
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new InvalidOperationException($"Failed to register user: {errors}");
+        }
 
         return GenerateJwtToken(user);
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request)
     {
-        // Corrigido para usar FindAsync, que existe no repositório
-        var user = (await _userRepository.FindAsync(u => u.Email == request.Email)).FirstOrDefault();
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user == null)
+        {
+            throw new UnauthorizedAccessException("Invalid email or password");
+        }
 
-        if (user == null || !VerifyPassword(user, request.Password))
+        var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, lockoutOnFailure: false);
+
+        if (!result.Succeeded)
         {
             throw new UnauthorizedAccessException("Invalid email or password");
         }
 
         user.LastLoginAt = DateTime.UtcNow;
-        _userRepository.Update(user); // Corrigido de UpdateAsync para Update
-        await _userRepository.SaveChangesAsync();
+        await _userManager.UpdateAsync(user);
 
         return GenerateJwtToken(user);
     }
 
     public async Task<bool> UserExistsAsync(string email)
     {
-        // Corrigido para usar FindAsync, que existe no repositório
-        var users = await _userRepository.FindAsync(u => u.Email == email);
-        return users.Any();
-    }
-
-    private string HashPassword(AppUser user, string password)
-    {
-        return _passwordHasher.HashPassword(user, password);
-    }
-
-    private bool VerifyPassword(AppUser user, string password)
-    {
-        if (string.IsNullOrEmpty(user.PasswordHash))
-            return false;
-
-        var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
-        return result == PasswordVerificationResult.Success || 
-               result == PasswordVerificationResult.SuccessRehashNeeded;
+        return await _userManager.FindByEmailAsync(email) != null;
     }
 
     private AuthResponse GenerateJwtToken(AppUser user)

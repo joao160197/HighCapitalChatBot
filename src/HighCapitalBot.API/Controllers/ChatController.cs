@@ -38,8 +38,9 @@ public class ChatController : ControllerBase
                 return Unauthorized("User ID not found in token.");
             }
 
-            var response = await _chatService.SendMessageAsync(botId, request.Content, userId);
-            return Ok(response);
+            await _chatService.SendMessageAsync(botId, request.Content, userId);
+            var history = await _chatService.GetChatHistoryAsync(botId);
+            return Ok(history);
         }
         catch (ArgumentException ex)
         {

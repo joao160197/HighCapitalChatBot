@@ -36,7 +36,7 @@ public class ChatService : IChatService
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<ChatResponseDto> SendMessageAsync(int botId, string message, string userId)
+    public async Task SendMessageAsync(int botId, string message, string userId)
     {
         try
         {
@@ -83,7 +83,8 @@ public class ChatService : IChatService
                 }
 
                 // Call AI service with history
-                var botResponseContent = await _aiService.GetResponseWithHistoryAsync(messages);
+                // var botResponseContent = await _aiService.GetResponseWithHistoryAsync(messages);
+                var botResponseContent = "Esta é uma resposta automática, pois a IA ainda não foi ativada com uma chave de API.";
 
                 // Save bot response
                 var botMessage = new ChatMessage
@@ -97,12 +98,7 @@ public class ChatService : IChatService
                 await _chatMessageRepository.AddAsync(botMessage);
                 await _chatMessageRepository.SaveChangesAsync();
 
-                // Return both messages
-                return new ChatResponseDto
-                {
-                    UserMessage = _mapper.Map<ChatMessageDto>(userMessage),
-                    BotResponse = _mapper.Map<ChatMessageDto>(botMessage)
-                };
+
             }
             catch (Exception ex)
             {

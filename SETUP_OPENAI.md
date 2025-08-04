@@ -11,7 +11,7 @@ Para que o chat funcione corretamente, você precisa configurar sua chave da API
 4. Copie a chave gerada (ela começa com `sk-`)
 
 ### 2. Configurar no Backend
-Abra o arquivo `src/HighCapitalBot.API/appsettings.json` e substitua:
+Abra o arquivo `src/HighCapitalBot.API/appsettings.Development.json` (crie-o se não existir, copiando o conteúdo de `appsettings.json`) e adicione sua chave:
 
 ```json
 {

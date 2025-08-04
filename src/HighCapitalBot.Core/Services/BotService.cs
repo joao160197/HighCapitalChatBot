@@ -31,7 +31,7 @@ public class BotService : IBotService
     {
         try
         {
-            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
             {
                 _logger.LogError("User ID not found in token.");
@@ -56,12 +56,24 @@ public class BotService : IBotService
     {
         try
         {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogError("User ID not found in token.");
+                throw new UnauthorizedAccessException("User ID not found in token.");
+            }
+
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user == null)
+            {
+                throw new Exception("Usuário não encontrado.");
+            }
+
             var bot = await _botRepository.GetByIdAsync(id);
             return bot == null ? null : _mapper.Map<BotDto>(bot);
         }
         catch (Exception ex)
         {
-            // Corrigido para usar o log estruturado corretamente
             _logger.LogError(ex, "Error getting bot with id {id}", id);
             throw;
         }
@@ -71,12 +83,19 @@ public class BotService : IBotService
     {
         try
         {
-            var bots = await _botRepository.GetAllAsync();
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                _logger.LogWarning("Attempted to get bots for a user without a valid ID in the token.");
+                return Enumerable.Empty<BotDto>();
+            }
+
+            var bots = await _botRepository.FindAsync(b => b.AppUserId == userId);
             return _mapper.Map<IEnumerable<BotDto>>(bots);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting all bots");
+            _logger.LogError(ex, "Error getting all bots for the current user");
             throw;
         }
     }

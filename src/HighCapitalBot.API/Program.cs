@@ -13,7 +13,6 @@ using HighCapitalBot.Core.Interfaces;
 using HighCapitalBot.Core.Mappings;
 using HighCapitalBot.Core.Models.Settings; 
 using HighCapitalBot.Core.Services;
-using HighCapitalBot.Core.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -47,13 +46,13 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 
 // Configure JWT
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 
-if (jwtSettings == null)
+if (jwtSettings == null || string.IsNullOrEmpty(jwtSettings.Secret))
 {
-    throw new InvalidOperationException("JWT settings not found in configuration.");
+    throw new InvalidOperationException("JWT secret key is not configured.");
 }
-builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 
 builder.Services.AddAuthentication(options =>
     {
@@ -68,9 +67,9 @@ builder.Services.AddAuthentication(options =>
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings.Issuer,
-            ValidAudience = jwtSettings.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
+                        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Secret"]!)),
             ClockSkew = TimeSpan.Zero
         };
     });
