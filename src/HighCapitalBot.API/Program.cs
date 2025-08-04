@@ -164,6 +164,30 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// Lógica para executar o seeding manualmente
+if (args.Length == 1 && args[0].ToLower() == "seed-database")
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        try
+        {
+            logger.LogInformation("Seeding database...");
+            DatabaseInitializer.SeedDatabase(services);
+            logger.LogInformation("Database seeding completed successfully.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred during database seeding.");
+        }
+    }
+    // Encerra a aplicação após o seeding
+    return;
+}
+
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -182,8 +206,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-// Initialize the database
-await DatabaseInitializer.InitializeDatabaseAsync(app);
 
 app.Run();

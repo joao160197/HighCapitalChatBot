@@ -37,7 +37,7 @@ public class AuthService : IAuthService
         var existingUser = await _userManager.FindByEmailAsync(request.Email);
         if (existingUser != null)
         {
-            throw new InvalidOperationException("Email already registered");
+            return new AuthResponse { IsSuccess = false, Errors = new[] { "Email already registered" } };
         }
 
         var user = new AppUser
@@ -51,11 +51,16 @@ public class AuthService : IAuthService
 
         if (!result.Succeeded)
         {
-            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            throw new InvalidOperationException($"Failed to register user: {errors}");
+            return new AuthResponse
+            {
+                IsSuccess = false,
+                Errors = result.Errors.Select(e => e.Description)
+            };
         }
 
-        return GenerateJwtToken(user);
+        var tokenResponse = GenerateJwtToken(user);
+        tokenResponse.IsSuccess = true;
+        return tokenResponse;
     }
 
     public async Task<AuthResponse> LoginAsync(LoginRequest request)

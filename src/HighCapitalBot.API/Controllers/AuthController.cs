@@ -24,20 +24,15 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request)
     {
-        try
+        var result = await _authService.RegisterAsync(request);
+
+        if (!result.IsSuccess)
         {
-            var response = await _authService.RegisterAsync(request);
-            return Ok(response);
+            // Retorna uma lista de erros para o frontend poder exibir
+            return BadRequest(new { errors = result.Errors });
         }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error during user registration");
-            return StatusCode(500, "An error occurred during registration");
-        }
+
+        return Ok(result);
     }
 
     [HttpPost("login")]

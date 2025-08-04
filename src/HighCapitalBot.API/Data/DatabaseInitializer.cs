@@ -10,50 +10,45 @@ namespace HighCapitalBot.API.Data;
 
 public static class DatabaseInitializer
 {
-    public static async Task InitializeDatabaseAsync(WebApplication app)
+    public static void SeedDatabase(IServiceProvider services)
     {
-        using var scope = app.Services.CreateScope();
-        var services = scope.ServiceProvider;
-        
         try
         {
-            var context = services.GetRequiredService<AppDbContext>();
             var userManager = services.GetRequiredService<UserManager<AppUser>>();
             var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             var configuration = services.GetRequiredService<IConfiguration>();
             
-            // Aplica as migrações pendentes
-            await context.Database.MigrateAsync();
-            
-            // Inicializa os dados iniciais
-            await SeedRolesAsync(roleManager);
-            await SeedAdminUserAsync(userManager, configuration);
+            // Inicializa os dados iniciais de forma síncrona
+            SeedRoles(roleManager);
+            SeedAdminUser(userManager, configuration);
         }
         catch (Exception ex)
         {
             var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogError(ex, "An error occurred while initializing the database.");
+            logger.LogError(ex, "An error occurred while seeding the database.");
             throw;
         }
     }
     
-    private static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+    private static void SeedRoles(RoleManager<IdentityRole> roleManager)
     {
         string[] roles = { "Admin", "User" };
         
         foreach (var role in roles)
         {
-            if (!await roleManager.RoleExistsAsync(role))
-            await roleManager.CreateAsync(new IdentityRole(role));
+            if (!roleManager.RoleExistsAsync(role).GetAwaiter().GetResult())
+            {
+                roleManager.CreateAsync(new IdentityRole(role)).GetAwaiter().GetResult();
+            }
         }
     }
     
-    private static async Task SeedAdminUserAsync(UserManager<AppUser> userManager, IConfiguration configuration)
+    private static void SeedAdminUser(UserManager<AppUser> userManager, IConfiguration configuration)
     {
         var adminEmail = configuration["AdminUser:Email"] ?? "admin@highcapitalbot.com";
         var adminPassword = configuration["AdminUser:Password"] ?? "Admin@123";
         
-        if (await userManager.FindByEmailAsync(adminEmail) == null)
+        if (userManager.FindByEmailAsync(adminEmail).GetAwaiter().GetResult() == null)
         {
             var adminUser = new AppUser
             {
@@ -62,11 +57,11 @@ public static class DatabaseInitializer
                 EmailConfirmed = true
             };
             
-            var result = await userManager.CreateAsync(adminUser, adminPassword);
+            var result = userManager.CreateAsync(adminUser, adminPassword).GetAwaiter().GetResult();
             
             if (result.Succeeded)
             {
-                await userManager.AddToRoleAsync(adminUser, "Admin");
+                userManager.AddToRoleAsync(adminUser, "Admin").GetAwaiter().GetResult();
             }
         }
     }

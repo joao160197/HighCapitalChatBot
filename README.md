@@ -121,3 +121,4 @@ Siga os passos abaixo para configurar e executar o projeto em seu ambiente local
     -   A aplicação React estará disponível em `http://localhost:3000`.
 
 Agora você pode se registrar, criar seu primeiro bot e começar a conversar!
+# HighCapitalChatBot

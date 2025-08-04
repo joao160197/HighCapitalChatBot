@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HighCapitalBot.Core.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250801145606_InitialCreate")]
+    [Migration("20250804030800_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
