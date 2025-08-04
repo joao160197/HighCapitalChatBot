@@ -1,67 +1,62 @@
 # 🔑 Configuração da API OpenAI
 
-Para que o chat funcione corretamente, você precisa configurar sua chave da API da OpenAI.
+Para ativar as respostas inteligentes do chat, siga estes passos simples:
 
-## 📋 Passos para Configuração
-
-### 1. Obter a Chave da API
+## 🚀 Passo 1: Obter uma Chave da API
 1. Acesse [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
 2. Faça login na sua conta OpenAI
 3. Clique em "Create new secret key"
 4. Copie a chave gerada (ela começa com `sk-`)
 
-### 2. Configurar no Backend
-Abra o arquivo `src/HighCapitalBot.API/appsettings.Development.json` (crie-o se não existir, copiando o conteúdo de `appsettings.json`) e adicione sua chave:
+## ⚙️ Passo 2: Configurar no Backend
+1. Abra o arquivo `src/HighCapitalBot.API/appsettings.json`
+2. Localize a seção `OpenAISettings`
+3. Substitua `"SUA_CHAVE_API"` pela sua chave:
 
 ```json
-{
-  "OpenAISettings": {
-    "ApiKey": "sua-chave-da-api-aqui",
-    "ModelName": "gpt-3.5-turbo",
-    "MaxTokens": 1000,
-    "Temperature": 0.7
-  }
+"OpenAISettings": {
+  "ApiKey": "sua-chave-aqui",
+  "ModelName": "gpt-3.5-turbo",
+  "MaxTokens": 1000,
+  "Temperature": 0.7
 }
 ```
 
-**⚠️ IMPORTANTE:** Substitua `"sua-chave-da-api-aqui"` pela sua chave real da OpenAI.
+## 🔄 Passo 3: Ativar o Serviço de IA
+1. Abra o arquivo `src/HighCapitalBot.Core/Services/ChatService.cs`
+2. Localize a linha que contém o comentário `// var botResponseContent = await _aiService.GetResponseWithHistoryAsync(messages);`
+3. Descomente a linha removendo as barras `//` do início
+4. Comente ou remova a linha abaixo que contém a mensagem fixa
 
-### 3. Reiniciar o Backend
-Após configurar a chave, reinicie o servidor do backend:
-
+## ▶️ Passo 4: Reiniciar o Servidor
+Execute no terminal:
 ```bash
 cd src/HighCapitalBot.API
 dotnet run
 ```
 
-## 🧪 Testando a Funcionalidade
+## 🧪 Como Testar
+1. Crie um novo bot ou use um existente
+2. Envie uma mensagem no chat
+3. Você deve receber uma resposta gerada pela IA
 
-1. **Crie um bot** na interface web
-2. **Clique no bot** para abrir o chat
-3. **Envie uma mensagem** e aguarde a resposta da IA
+## 🔒 Dicas de Segurança
+- Nunca compartilhe sua chave da API
+- Nunca faça commit da chave no Git
+- Para produção, use variáveis de ambiente
 
-## 🔒 Segurança
+## 💡 Dúvidas Comuns
 
-- **Nunca** compartilhe sua chave da API
-- **Não** faça commit da chave no Git
-- Para produção, use variáveis de ambiente em vez do appsettings.json
+### Onde encontro minha chave da API?
+Acesse: [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys)
 
-## 💰 Custos
+### Como sei se está funcionando?
+Se você receber respostas geradas pela IA (e não a mensagem fixa), está tudo certo!
 
-- O modelo `gpt-3.5-turbo` tem custo por token
-- Monitore seu uso em [https://platform.openai.com/usage](https://platform.openai.com/usage)
-- Considere definir limites de uso na sua conta OpenAI
+### Estou recebendo erros de autenticação
+- Verifique se copiou a chave corretamente
+- Confirme se sua conta tem créditos disponíveis
+- Verifique os logs do servidor para mensagens de erro detalhadas
 
-## 🛠️ Solução de Problemas
-
-### Erro: "OpenAI API key not configured"
-- Verifique se a chave foi configurada corretamente no appsettings.json
-- Certifique-se de que não há espaços extras na chave
-
-### Erro: "Unauthorized" ou "Invalid API Key"
-- Verifique se a chave está correta
-- Confirme se sua conta OpenAI tem créditos disponíveis
-
-### Mensagens não aparecem
-- Verifique os logs do backend para erros
-- Confirme se o frontend está conectado ao backend correto
+### Quanto custa usar a API da OpenAI?
+Consulte os preços em: [https://openai.com/pricing](https://openai.com/pricing)

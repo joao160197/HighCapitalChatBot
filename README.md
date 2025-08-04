@@ -1,124 +1,163 @@
 # HighCapitalChatBot
 
+<div align="center">
+  <img src="https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet" alt=".NET 9.0" />
+  <img src="https://img.shields.io/badge/React-18.2-61DAFB?logo=react" alt="React 18.2" />
+  <img src="https://img.shields.io/badge/OpenAI-GPT--3.5-412991?logo=openai" alt="OpenAI GPT-3.5" />
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" />
+</div>
+
 ## 🚀 Visão Geral do Projeto
 
 O **HighCapitalChatBot** é uma aplicação web completa que permite a criação e interação com chatbots personalizados, potencializados por Inteligência Artificial. Desenvolvido como parte de um desafio técnico, o projeto demonstra uma arquitetura robusta com backend em C# .NET e frontend em ReactJS, seguindo as melhores práticas de desenvolvimento de software.
 
-A plataforma permite que usuários criem múltiplos bots, cada um com seu próprio "contexto" (personalidade), e conversem com eles em tempo real. O histórico das conversas é salvo e exibido, proporcionando uma experiência de chat contínua e rica.
+### ✨ Demonstração
 
----
+![Demonstração da Aplicação](docs/images/demo.gif)
 
-## ✨ Funcionalidades Implementadas
+## ✨ Funcionalidades Principais
 
--   **🤖 Criação de Chatbots Personalizados:**
-    -   Crie bots informando um nome e um contexto inicial (ex: "Você é um assistente de marketing especialista em mídias sociais").
-    -   Visualize todos os bots criados em uma tela de gerenciamento.
+### 🤖 Gerenciamento de Bots
+- Criação de múltiplos chatbots com personalidades únicas
+- Definição de contexto específico para cada bot
+- Exclusão de bots
 
--   **💬 Interação em Tempo Real:**
-    -   Interface de chat moderna para conversar com os bots selecionados.
-    -   Respostas geradas pela API da OpenAI, utilizando o contexto do bot e o histórico da conversa.
+### 💬 Chat em Tempo Real
+- Interface de conversação intuitiva
+- Histórico completo de mensagens
+- Indicador de digitação
+- Respostas geradas por IA
 
--   **🗃️ Persistência de Dados:**
-    -   Todas as mensagens (usuário e bot) são salvas no banco de dados.
-    -   O histórico completo da conversa é recuperado ao reabrir um chat.
-
--   **🔐 Autenticação de Usuários:**
-    -   Sistema de login e registro com autenticação baseada em JWT (JSON Web Tokens) para proteger as rotas.
-
--   **💪 Tratamento de Erros Robusto:**
-    -   O sistema lida de forma elegante com falhas na API da IA, exibindo uma mensagem amigável ao usuário sem interromper a aplicação.
-
----
+### 🔐 Autenticação Segura
+- Cadastro e login de usuários
+- Autenticação JWT
+- Rotas protegidas
 
 ## 🛠️ Tecnologias Utilizadas
 
-### **Backend**
--   **Linguagem:** C#
--   **Framework:** .NET 9
--   **API:** ASP.NET Core Web API
--   **Banco de Dados:** Entity Framework Core com SQLite
--   **API de IA:** OpenAI
--   **Arquitetura:** Injeção de Dependência, Padrão Repositório, Services
+### Backend
+- **Linguagem:** C# 11
+- **Framework:** .NET 9
+- **API:** ASP.NET Core Web API
+- **Banco de Dados:** Entity Framework Core + SQLite
+- **Autenticação:** JWT (JSON Web Tokens)
+- **IA:** OpenAI API (GPT-3.5-turbo)
+- **Testes:** xUnit
 
-### **Frontend**
--   **Framework:** ReactJS
--   **Gerenciador de Pacotes:** npm
--   **Estilização:** CSS Padrão / Component-Based Styling
--   **Comunicação com API:** Axios
+### Frontend
+- **Framework:** React 18
+- **Gerenciamento de Estado:** React Context API
+- **Roteamento:** React Router v6
+- **UI Components:** Material-UI (MUI)
+- **Requisições HTTP:** Axios
+- **Formulários:** React Hook Form
 
----
+## 🚀 Começando
 
-## 📂 Estrutura do Projeto
+### Pré-requisitos
+
+- [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
+- [Node.js](https://nodejs.org/) 16+ e npm
+- [SQLite](https://www.sqlite.org/index.html)
+- Conta na [OpenAI](https://platform.openai.com/) (para chave de API)
+
+### Instalação
+
+1. **Clonar o repositório**
+   ```bash
+   git clone https://github.com/seu-usuario/HighCapitalChatBot.git
+   cd HighCapitalChatBot
+   ```
+
+2. **Configurar o Backend**
+   ```bash
+   cd src/HighCapitalBot.API
+   cp .env.example .env
+   # Edite o arquivo .env com suas configurações
+   dotnet restore
+   dotnet ef database update
+   dotnet run
+   ```
+
+3. **Configurar o Frontend**
+   ```bash
+   cd ../../frontend
+   npm install
+   npm start
+   ```
+
+4. **Acessar a Aplicação**
+   - Frontend: http://localhost:3000
+   - Backend: http://localhost:5044
+   - Swagger UI: http://localhost:5044/swagger
+
+## 📦 Estrutura do Projeto
 
 ```
-/
+HighCapitalChatBot/
 ├── src/
-│   ├── HighCapitalBot.Api/         # Projeto do Backend (Controllers, Program.cs, etc.)
-│   ├── HighCapitalBot.Core/        # Lógica de negócio, Entidades, DTOs, Services, Interfaces
-│   ├── HighCapitalBot.Data/        # Contexto do EF Core, Repositórios, Migrações
-│   └── HighCapitalBot.sln          # Solução do Visual Studio
-├── frontend/                       # Projeto do Frontend (React)
-│   ├── public/
+│   ├── HighCapitalBot.API/         # API principal (ASP.NET Core)
+│   │   ├── Controllers/            # Controladores da API
+│   │   ├── Middleware/             # Middleware personalizado
+│   │   └── Program.cs              # Ponto de entrada
+│   │
+│   ├── HighCapitalBot.Core/        # Lógica de negócio
+│   │   ├── DTOs/                   # Objetos de Transferência de Dados
+│   │   ├── Entities/               # Entidades do domínio
+│   │   ├── Interfaces/             # Interfaces dos serviços
+│   │   └── Services/               # Serviços de negócio
+│   │
+│   └── HighCapitalBot.Data/        # Camada de dados
+│       ├── Migrations/             # Migrações do banco de dados
+│       └── AppDbContext.cs         # Contexto do Entity Framework
+│
+├── frontend/                       # Aplicação React
+│   ├── public/                     # Arquivos estáticos
 │   └── src/
-└── README.md
+│       ├── components/             # Componentes React
+│       ├── context/                # Contextos React
+│       ├── services/               # Serviços de API
+│       └── App.js                  # Componente raiz
+│
+├── tests/                          # Testes automatizados
+├── .github/                        # Configurações do GitHub
+├── .env.example                    # Exemplo de variáveis de ambiente
+└── README.md                       # Este arquivo
 ```
 
----
+## 🔧 Configuração
 
-## ⚙️ Instalação e Execução
+### Variáveis de Ambiente
 
-Siga os passos abaixo para configurar e executar o projeto em seu ambiente local.
+Crie um arquivo `.env` na raiz do projeto baseado no `.env.example`:
 
-### **Pré-requisitos**
--   [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0) ou superior
--   [Node.js e npm](https://nodejs.org/en/)
--   Um editor de código como [Visual Studio Code](https://code.visualstudio.com/) ou Visual Studio
+```env
+# Configurações da API OpenAI
+OPENAI_API_KEY=sua_chave_aqui
+OPENAI_MODEL=gpt-3.5-turbo
 
-### **1. Configuração do Backend**
+# Configurações do JWT
+JWT_SECRET=sua_chave_secreta
+JWT_ISSUER=HighCapitalBot.API
+JWT_AUDIENCE=HighCapitalBot.Client
+JWT_EXPIRE_MINUTES=1440
 
-1.  **Clone o repositório:**
-    ```bash
-    git clone <URL_DO_REPOSITORIO>
-    cd HighCapitalBot
-    ```
+# Configurações do Banco de Dados
+CONNECTION_STRING=Data Source=HighCapitalBot.db
+```
 
-2.  **Configure a API da OpenAI:**
-    -   Navegue até o projeto da API: `cd src/HighCapitalBot.Api`
-    -   Abra o arquivo `src/HighCapitalBot.API/appsettings.Development.json` (crie-o se não existir, copiando de `appsettings.json`).
-    -   Insira sua chave da API da OpenAI no campo `ApiKey` dentro de `OpenAiSettings`:
-        ```json
-        "OpenAiSettings": {
-          "ApiKey": "SUA_CHAVE_API_AQUI",
-          "ModelName": "gpt-3.5-turbo"
-        }
-        ```
+## 🧪 Testes
 
-3.  **Execute o Backend:**
-    -   Ainda no diretório `src/HighCapitalBot.Api`, execute o comando:
-        ```bash
-        dotnet run
-        ```
-    -   O servidor backend estará rodando em `http://localhost:5044`.
-    -   O banco de dados (`HighCapitalBot.db`) será criado automaticamente na primeira execução.
+### Backend
+```bash
+cd src/HighCapitalBot.Tests
+dotnet test
+```
 
-### **2. Configuração do Frontend**
+### Frontend
+```bash
+cd frontend
+npm test
+```
 
-1.  **Navegue até a pasta do frontend:**
-    ```bash
-    # A partir da raiz do projeto
-    cd ../frontend 
-    ```
 
-2.  **Instale as dependências:**
-    ```bash
-    npm install
-    ```
-
-3.  **Execute o Frontend:**
-    ```bash
-    npm start
-    ```
-    -   A aplicação React estará disponível em `http://localhost:3000`.
-
-Agora você pode se registrar, criar seu primeiro bot e começar a conversar!
-# HighCapitalChatBot
