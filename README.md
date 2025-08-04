@@ -18,7 +18,7 @@ Para executar o projeto completo, você precisará clonar ambos os repositórios
 
 O **HighCapitalChatBot** é uma aplicação web completa que permite a criação e interação com chatbots personalizados, potencializados por Inteligência Artificial. Desenvolvido como parte de um desafio técnico, o projeto demonstra uma arquitetura robusta com backend em C# .NET e frontend em ReactJS, seguindo as melhores práticas de desenvolvimento de software.
 
-### ✨ Demonstração
+
 
 ![Demonstração da Aplicação](docs/images/demo.gif)
 
